@@ -19,7 +19,7 @@ export default {
 }
 
 #app {
-  font-family: "小宋字体";
+  font-family: "微软雅黑";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
