@@ -1,7 +1,8 @@
 const path = require('path')
 const CompressionPlugin = require('compression-webpack-plugin') //压缩为gzip文件
+const { resolve } = require('path')
 
-let developmentPath = './' //开发环境-npm run serve时引用文件路径
+let developmentPath = '/' //开发环境-npm run serve时引用文件路径
 let productionPath = './' //生产环境-npm run build打包后引用文件路径
 
 module.exports = {
@@ -11,7 +12,9 @@ module.exports = {
   lintOnSave: false, // eslint-loader 是否在保存的时候检查
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // webpack配置
-  chainWebpack: config => {},
+  chainWebpack: config => {
+    config.resolve.alias.set('@', resolve('src'))
+  },
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...
@@ -58,14 +61,6 @@ module.exports = {
       // 为开发环境修改配置...
       config.mode = 'development'
     }
-    Object.assign(config, {
-      // 开发生产共同配置
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, './src')
-        } // 别名配置
-      }
-    })
   },
   productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
   // css相关配置
@@ -92,8 +87,8 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://localhost/api',
-        changeOrigin: true, // 允许websockets跨域
-        // ws: true,
+        changeOrigin: true,
+        // ws: true,// 允许websockets跨域
         pathRewrite: {
           '^/api': ''
         }

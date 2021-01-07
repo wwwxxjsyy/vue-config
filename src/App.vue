@@ -1,24 +1,20 @@
 <template>
-  <div>
-    <Echarts-Map></Echarts-Map>
-  </div>
+  <!-- <Echarts-Map></Echarts-Map> -->
+  <div></div>
 </template>
 
 <script>
-import Echartsmap from "@/components/echartsmap.vue";
+import Echartsmap from "./components/GdMap";
 export default {
   name: "App",
-  components: { "Echarts-Map": Echartsmap },
+  // components: { "Echarts-Map": Echartsmap },
 };
 </script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-}
-
 #app {
+  width: 100%;
+  height: 100%;
   font-family: "微软雅黑";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
