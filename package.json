@@ -10,6 +10,8 @@
   "dependencies": {
     "compression-webpack-plugin": "^1.1.2",
     "core-js": "^3.6.5",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^10.1.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
