@@ -1,13 +1,19 @@
 <template>
-  <!-- <Echarts-Map></Echarts-Map> -->
-  <div></div>
+  <transition mode="out-in" name="fade-transform">
+    <keep-alive>
+      <router-view :key="key" class="app-main-height" />
+    </keep-alive>
+  </transition>
 </template>
 
 <script>
-import Echartsmap from "./components/GdMap";
 export default {
   name: "App",
-  // components: { "Echarts-Map": Echartsmap },
+  computed: {
+    key() {
+      return this.$route.path;
+    },
+  },
 };
 </script>
 

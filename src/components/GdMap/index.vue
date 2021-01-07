@@ -1,8 +1,8 @@
 <!-- 全国地图 -->
 <template>
   <div class="echartsmap_class" id="container"></div>
-  <p>当前地图级别：{{ jsondata.zoom }}</p>
-  <p>当前地图中心位置坐标：{{ jsondata.center }}</p>
+  <!-- <p>当前地图级别：{{ jsondata.zoom }}</p>
+  <p>当前地图中心位置坐标：{{ jsondata.center }}</p> -->
 </template>
 
 <script>

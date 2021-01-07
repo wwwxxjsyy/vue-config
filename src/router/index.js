@@ -8,12 +8,21 @@ import {
 const routes = [
   {
     path: '/',
-    redirect: '/countIndex'
+    redirect: '/gdmap'
   },
   {
-    path: '/countIndex',
-    name: 'countIndex',
+    path: '/gdmap',
+    name: 'gdmap',
     component: () => import('@/components/GdMap')
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: () => import('@/components/404')
+  },
+  {
+    path: '/:pathMatch(.*)',
+    redirect: '/404'
   }
 ]
 
