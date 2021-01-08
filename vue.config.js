@@ -2,12 +2,8 @@ const path = require('path')
 const CompressionPlugin = require('compression-webpack-plugin') //压缩为gzip文件
 const { resolve } = require('path')
 
-let developmentPath = '/' //开发环境-npm run serve时引用文件路径
-let productionPath = './' //生产环境-npm run build打包后引用文件路径
-
 module.exports = {
-  publicPath:
-    process.env.NODE_ENV === 'production' ? productionPath : developmentPath, // 基本路径-引用文件的路径
+  publicPath: process.env.NODE_ENV === 'production' ? './' : './', // 基本路径-引用文件的路径
   outputDir: 'dist', // 输出文件目录
   lintOnSave: false, // eslint-loader 是否在保存的时候检查
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md

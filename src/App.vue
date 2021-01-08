@@ -1,7 +1,7 @@
 <template>
   <transition mode="out-in" name="fade-transform">
     <keep-alive>
-      <router-view :key="key" class="app-main-height" />
+      <router-view class="app-main-height" />
     </keep-alive>
   </transition>
 </template>

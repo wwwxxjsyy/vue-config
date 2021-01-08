@@ -1,6 +1,7 @@
 <!-- 全国地图 -->
 <template>
-  <div class="echartsmap_class" id="container"></div>
+  <!-- <div class="echartsmap_class" id="container"></div> -->
+  <button @click="handlerouter">handlerouter</button>
   <!-- <p>当前地图级别：{{ jsondata.zoom }}</p>
   <p>当前地图中心位置坐标：{{ jsondata.center }}</p> -->
 </template>
@@ -27,6 +28,9 @@ export default {
   computed: {},
 
   methods: {
+    handlerouter(){
+      this.$router.push("/404")
+    },
     getMap() {
       var map = new AMap.Map("container", {
         zoom: 11, //级别

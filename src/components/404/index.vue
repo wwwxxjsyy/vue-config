@@ -5,9 +5,9 @@
       <div class="bullshit-oops">{{ oops }}</div>
       <div class="bullshit-headline">{{ headline }}</div>
       <div class="bullshit-info">{{ info }}</div>
-      <a class="bullshit-return-home" href="#/index">
-        {{ jumpTime }}s&nbsp;{{ btn }}
-      </a>
+      <div class="bullshit-return-home">
+        {{ jumpTime }} <button @click="handlebtn">{{ btn }}</button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,12 +36,16 @@ export default {
   computed: {},
 
   methods: {
+    handlebtn() {
+      this.$router.push("/");
+    },
     timeChange() {
+      let thant = this
       this.timer = setInterval(() => {
         if (this.jumpTime) {
           this.jumpTime--;
         } else {
-          this.$router.push({ path: "/" });
+          thant.$router.push({ path: "/" });
           clearInterval(this.timer);
         }
       }, 1000);
@@ -113,7 +117,7 @@ export default {
       height: 36px;
       font-size: 14px;
       line-height: 36px;
-      color: #fff;
+      color: rgb(243, 69, 26);
       text-align: center;
       cursor: pointer;
       border-radius: 100px;
