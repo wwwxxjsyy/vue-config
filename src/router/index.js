@@ -16,6 +16,11 @@ const routes = [
     component: () => import('@/components/GdMap')
   },
   {
+    path: '/fscss',
+    name: 'fscss',
+    component: () => import('@/views/fsCssFile')
+  },
+  {
     path: '/404',
     name: '404',
     component: () => import('@/components/404')
