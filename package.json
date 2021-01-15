@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "happypack": "^5.0.1",
     "sass-loader": "^10.1.1",
     "vconsole-webpack-plugin": "^1.5.2",
     "vue": "^3.0.0-beta.1",

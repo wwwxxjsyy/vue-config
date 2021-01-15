@@ -1,5 +1,7 @@
-const path = require('path')
 const CompressionPlugin = require('compression-webpack-plugin') //压缩为gzip文件
+const Happypack = require('happypack')
+const os = require('os')
+const happyThreadPool = Happypack.ThreadPool({ size: os.cpus().length })
 const { resolve } = require('path')
 
 module.exports = {
@@ -57,6 +59,18 @@ module.exports = {
       // 为开发环境修改配置...
       config.mode = 'development'
     }
+
+    // 多线程优化构建速度
+    config.plugins.push(
+      new Happypack({
+        loaders: ['babel-loader', 'vue-loader', 'url-loader'],
+        //共享进程池
+        threadPool: happyThreadPool,
+        //允许 HappyPack 输出日志
+        verbose: true,
+        threads: 3 // 线程数取决于你电脑性能的好坏，好的电脑建议开更多线程
+      })
+    )
   },
   productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
   // css相关配置

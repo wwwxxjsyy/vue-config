@@ -1,134 +1,110 @@
-/**
- * *@2021/01/15
- * *@author shr
- * *@describe vue-cli 3.x配置文件
- */
-const vConsolePlugin = require('vconsole-webpack-plugin') // 引入 移动端模拟开发者工具 插件 （另：https://github.com/liriliri/eruda）
-const CompressionPlugin = require('compression-webpack-plugin') //Gzip
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin //Webpack包文件分析器
+const CompressionPlugin = require('compression-webpack-plugin') //压缩为gzip文件
+const Happypack = require('happypack')
+const os = require('os')
+const happyThreadPool = Happypack.ThreadPool({ size: os.cpus().length })
+const { resolve } = require('path')
 
 module.exports = {
-  //基本路径
-  publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
-  //输出文件目录
-  outputDir: 'dist',
-  // eslint-loader 是否在保存的时候检查
-  lintOnSave: false,
-  //放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
-  assetsDir: 'static',
-  //以多页模式构建应用程序。
-  // pages: undefined,
-  pages: {
-    index: {
-      // page 的入口
-      entry: 'src/main.js',
-      // 模板来源
-      template: 'public/index.html',
-      // 在 dist/index.html 的输出
-      filename: 'index.html',
-      // 当使用 title 选项时，
-      // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
-      title: 'Vue Page',
-      // 在这个页面中包含的块，默认情况下会包含
-      // 提取出来的通用 chunk 和 vendor chunk。
-      chunks: ['chunk-vendors', 'chunk-common', 'index']
-    },
-    // 当使用只有入口的字符串格式时，
-    // 模板会被推导为 `public/subpage.html`
-    // 并且如果找不到的话，就回退到 `public/index.html`。
-    // 输出文件名会被推导为 `subpage.html`。
-    subpage: 'src/main.js'
-  },
-  //是否使用包含运行时编译器的 Vue 构建版本
-  runtimeCompiler: false,
-  //是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建，在适当的时候开启几个子进程去并发的执行压缩
-  parallel: require('os').cpus().length > 1,
-  //生产环境是否生成 sourceMap 文件，一般情况不建议打开
-  productionSourceMap: false,
+  publicPath: process.env.NODE_ENV === 'production' ? './' : './', // 基本路径-引用文件的路径
+  outputDir: 'dist', // 输出文件目录
+  lintOnSave: false, // eslint-loader 是否在保存的时候检查
+  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // webpack配置
-  //对内部的 webpack 配置进行更细粒度的修改 https://github.com/neutrinojs/webpack-chain see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack: config => {
-    /**
-     * 删除懒加载模块的prefetch，降低带宽压力
-     * https://cli.vuejs.org/zh/guide/html-and-static-assets.html#prefetch
-     * 而且预渲染时生成的prefetch标签是modern版本的，低版本浏览器是不需要的
-     */
-    //config.plugins.delete('prefetch');
-    //if(process.env.NODE_ENV === 'production') { // 为生产环境修改配置...process.env.NODE_ENV !== 'development'
-    //} else {// 为开发环境修改配置...
-    //}
+    config.resolve.alias.set('@', resolve('src'))
   },
-  //调整 webpack 配置 https://cli.vuejs.org/zh/guide/webpack.html#%E7%AE%80%E5%8D%95%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F
   configureWebpack: config => {
-    //生产and测试环境
-    let pluginsPro = [
-      new CompressionPlugin({
-        //文件开启Gzip，也可以通过服务端(如：nginx)(https://github.com/webpack-contrib/compression-webpack-plugin)
-        filename: '[path].gz[query]',
-        algorithm: 'gzip',
-        test: new RegExp('\\.(' + ['js', 'css'].join('|') + ')$'),
-        threshold: 8192,
-        minRatio: 0.8
-      }),
-      //	Webpack包文件分析器(https://github.com/webpack-contrib/webpack-bundle-analyzer)
-      new BundleAnalyzerPlugin()
-    ]
-    //开发环境
-    let pluginsDev = [
-      //移动端模拟开发者工具(https://github.com/diamont1001/vconsole-webpack-plugin  https://github.com/Tencent/vConsole)
-      new vConsolePlugin({
-        filter: [], // 需要过滤的入口文件
-        enable: false // 发布代码前记得改回 false
-      })
-    ]
     if (process.env.NODE_ENV === 'production') {
-      // 为生产环境修改配置...process.env.NODE_ENV !== 'development'
-      config.plugins = [...config.plugins, ...pluginsPro]
+      // 为生产环境修改配置...
+      config.mode = 'production'
+      let optimization = {
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          maxInitialRequests: Infinity,
+          minSize: 20000, // 依赖包超过20000bit将被单独打包
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name (module) {
+                // get the name. E.g. node_modules/packageName/not/this/part.js
+                // or node_modules/packageName
+                const packageName = module.context.match(
+                  /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+                )[1]
+                // npm package names are URL-safe, but some servers don't like @ symbols
+                return `npm.${packageName.replace('@', '')}`
+              }
+            }
+          }
+        }
+      }
+      Object.assign(config, {
+        optimization
+      })
+
+      //开启gzip压缩
+      const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
+      config.plugins = [
+        ...config.plugins,
+        new CompressionPlugin({
+          filename: '[path].gz[query]',
+          algorithm: 'gzip',
+          test: productionGzipExtensions, //匹配文件名
+          threshold: 10240, //对超过10k的数据压缩
+          deleteOriginalAssets: false //不删除源文件
+        })
+      ]
     } else {
       // 为开发环境修改配置...
-      config.plugins = [...config.plugins, ...pluginsDev]
+      config.mode = 'development'
     }
+
+    // 多线程优化构建速度
+    config.plugins.push(
+      new Happypack({
+        loaders: ['babel-loader', 'vue-loader', 'url-loader'],
+        //共享进程池
+        threadPool: happyThreadPool,
+        //允许 HappyPack 输出日志
+        verbose: true,
+        threads: 3 // 线程数取决于你电脑性能的好坏，好的电脑建议开更多线程
+      })
+    )
   },
-  css: {},
-  // webpack-dev-server 相关配置 https://webpack.js.org/configuration/dev-server/
+  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
+  // css相关配置
+  css: {
+    extract: true, // 是否使用css分离插件 ExtractTextPlugin
+    sourceMap: true, // 开启 CSS source maps?
+    loaderOptions: {
+      css: {} // 这里的选项会传递给 css-loader
+      //postcss: {} // 这里的选项会传递给 postcss-loader
+    }, // css预设器配置项 详见https://cli.vuejs.org/zh/config/#css-loaderoptions
+    requireModuleExtension: true // 启用 CSS modules for all css / pre-processor files.
+  },
+  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+  pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
+  // webpack-dev-server 相关配置
   devServer: {
-    host: '0.0.0.0',
-    port: 8090, // 端口号
-    https: false, // https:{type:Boolean}
-    open: true, //配置自动启动浏览器  http://172.16.1.12:7071/rest/mcdPhoneBar/
-    hotOnly: true, // 热更新
+    open: true,
+    port: 8090, // 端口
+    https: false, // 启用https
     overlay: {
       warnings: true,
       errors: true
-    },
-    // proxy: 'http://localhost:8000'   // 配置跨域处理,只有一个代理
+    }, // 错误、警告在页面弹出
     proxy: {
-      //配置自动启动浏览器
-      '/rest/*': {
-        target: 'http://172.16.1.12:7071',
+      '/api': {
+        target: 'http://localhost/api',
         changeOrigin: true,
-        // ws: true,//websocket支持
-        secure: false
-      },
-      '/pbsevice/*': {
-        target: 'http://172.16.1.12:2018',
-        changeOrigin: true,
-        //ws: true,//websocket支持
-        secure: false
+        // ws: true,// 允许websockets跨域
+        pathRewrite: {
+          '^/api': ''
+        }
       }
-    }
+    } // 代理转发配置，用于调试环境
   },
-
-  // 第三方插件配置 https://www.npmjs.com/package/vue-cli-plugin-style-resources-loader
-  pluginOptions: {
-    'style-resources-loader': {
-      //https://github.com/yenshih/style-resources-loader
-      preProcessor: 'scss', //声明类型
-      patterns: [
-        //path.resolve(__dirname, './src/assets/scss/_common.scss'),
-      ]
-      //injector: 'append'
-    }
-  }
+  // 第三方插件配置
+  pluginOptions: {}
 }
