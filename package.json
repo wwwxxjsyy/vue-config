@@ -9,8 +9,11 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "sass-loader": "^10.1.1",
+    "vconsole-webpack-plugin": "^1.5.2",
     "vue": "^3.0.0-beta.1",
-    "vue-router": "4.0.0-alpha.6"
+    "vue-router": "4.0.0-alpha.6",
+    "webpack-bundle-analyzer": "^4.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -21,8 +24,7 @@
     "compression-webpack-plugin": "^1.1.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
-    "node-sass": "^5.0.0",
-    "sass-loader": "^10.1.0"
+    "node-sass": "^5.0.0"
   },
   "eslintConfig": {
     "root": true,

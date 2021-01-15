@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="fscss_class"></div>
+  <div class="fscss_class">123</div>
 </template>
 
 <script>
